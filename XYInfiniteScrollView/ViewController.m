@@ -11,6 +11,7 @@
 
 @interface ViewController ()
 @property (nonatomic, strong) NSArray *items;
+@property (nonatomic, weak) XYInfiniteScrollView *isv;
 @end
 
 @implementation ViewController
@@ -28,8 +29,8 @@
         NSLog(@"%@", blockItem.title);
       };
       
-//      item.position = XYInfiniteScrollItemPositionBottom;
-//      item.title = [NSString stringWithFormat:@"----> %d", i];
+      item.position = XYInfiniteScrollItemTextPositionBottom;
+      item.title = [NSString stringWithFormat:@"----> %d", i];
       
       [tempItems addObject:item];
     }
@@ -46,8 +47,18 @@
   XYInfiniteScrollView *isv = [[XYInfiniteScrollView alloc] init];
   isv.items = self.items;
   isv.center = self.view.center;
-  isv.bounds = CGRectMake(0, 0, 300, 168);
+  CGFloat width = self.view.frame.size.width - 2 * 20;
+  isv.bounds = CGRectMake(0, 0, width, width * 0.5625);
   [self.view addSubview:isv];
+  self.isv = isv;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+  if (self.isv.scrollDirection == XYInfiniteScrollViewDirectionPortrait) {
+    self.isv.scrollDirection = XYInfiniteScrollViewDirectionLandscape;
+  } else {
+    self.isv.scrollDirection = XYInfiniteScrollViewDirectionPortrait;
+  }
 }
 
 @end

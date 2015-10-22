@@ -9,7 +9,7 @@
 #import "XYInfiniteScrollItem.h"
 
 @implementation XYInfiniteScrollItem
-- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image position:(XYInfiniteScrollItemPosition)position {
+- (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image position:(XYInfiniteScrollItemTextPosition)position {
   if (self = [super init]) {
     self.title = [title copy];
     self.image = image;
@@ -18,13 +18,13 @@
   return self;
 }
 
-+ (instancetype)infiniteScrollItemWithTitle:(NSString *)title image:(UIImage *)image position:(XYInfiniteScrollItemPosition)position {
++ (instancetype)infiniteScrollItemWithTitle:(NSString *)title image:(UIImage *)image position:(XYInfiniteScrollItemTextPosition)position {
   return [[self alloc] initWithTitle:title image:image position:position];
 }
 
-- (XYInfiniteScrollItemPosition)position {
+- (XYInfiniteScrollItemTextPosition)position {
   if (!_position) {
-    return XYInfiniteScrollItemPositionHidden;
+    return XYInfiniteScrollItemTextPositionHidden;
   }
   return _position;
 }

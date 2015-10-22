@@ -17,9 +17,12 @@ typedef enum {
 }XYInfiniteScrollViewDirection;
 
 @interface XYInfiniteScrollView : UIScrollView
+/**
+ *  装的是 XYInfiniteScrollItem 对象
+ */
 @property (nonatomic, strong) NSArray *items;
 /**
  *  默认是 XYInfiniteScrollViewDirectionLanscape
  */
-//@property (nonatomic, assign) XYInfiniteScrollViewDirection scrollDirection; 待添加
+@property (nonatomic, assign) XYInfiniteScrollViewDirection scrollDirection;
 @end

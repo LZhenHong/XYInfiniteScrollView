@@ -29,9 +29,9 @@ static CGFloat titleHeight = 30.0;
 
 - (CGRect)titleRectForContentRect:(CGRect)contentRect {
   CGRect rect = CGRectZero;
-  if (self.item.position == XYInfiniteScrollItemPositioTop) {
+  if (self.item.position == XYInfiniteScrollItemTextPositionTop) {
     rect = CGRectMake(10, 0, self.bounds.size.width - 10, titleHeight);
-  } else if (self.item.position == XYInfiniteScrollItemPositionBottom) {
+  } else if (self.item.position == XYInfiniteScrollItemTextPositionBottom) {
     rect = CGRectMake(10, self.bounds.size.height - titleHeight, self.bounds.size.width - 10, titleHeight);
   } 
   return rect;

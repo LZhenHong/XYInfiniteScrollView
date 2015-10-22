@@ -10,17 +10,6 @@
 #import "XYInfiniteScrollItem.h"
 #import "XYInfiniteScrollViewButton.h"
 
-#pragma mark - XYInfiniteScrollView
-/**
- * scrollView 中图片滚动的方向
- * 当 scrollView 的滚动方向为 Portrait 时，只有 Up 和 Down 是有效的
- * 当 scrollView 的滚动方向为 Landscape 时，只有 Left 和 Right 是有效的
- */
-typedef enum {
-  InfiniteScrollDirectionUpRight,
-  InfiniteScrollDirectionDownLeft
-}InfiniteScrollDirection;
-
 @interface XYInfiniteScrollView () <UIScrollViewDelegate>
 @property (nonatomic, weak) XYInfiniteScrollViewButton *leftButton;
 @property (nonatomic, weak) XYInfiniteScrollViewButton *currentButton;
@@ -34,7 +23,7 @@ typedef enum {
     
     [self setupButtons];
     
-//    self.scrollDirection = XYInfiniteScrollViewDirectionLandscape;
+    self.scrollDirection = XYInfiniteScrollViewDirectionLandscape;
     
     self.backgroundColor = [UIColor clearColor];
     self.pagingEnabled = YES;
@@ -61,27 +50,31 @@ typedef enum {
   self.rightButton = rightButton;
 }
 
-//- (void)setScrollDirection:(XYInfiniteScrollViewDirection)scrollDirection {
-//  _scrollDirection = scrollDirection;
-//  [self layoutSubviews];
-//}
+- (void)setScrollDirection:(XYInfiniteScrollViewDirection)scrollDirection {
+  _scrollDirection = scrollDirection;
+  [self resetButtonPosition];
+  [self updateButtons];
+}
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  
+  [self resetButtonPosition];
+}
+
+- (void)resetButtonPosition {
   CGFloat scrollViewWidth = self.bounds.size.width;
   CGFloat scrollViewHeight = self.bounds.size.height;
-//  if (self.scrollDirection == XYInfiniteScrollViewDirectionLandscape) {
+  if (self.scrollDirection == XYInfiniteScrollViewDirectionLandscape) {
     self.leftButton.frame = CGRectMake(-scrollViewWidth, 0, scrollViewWidth, scrollViewHeight);
     self.currentButton.frame = CGRectMake(0, 0, scrollViewWidth, scrollViewHeight);
     self.rightButton.frame = CGRectMake(scrollViewWidth, 0, scrollViewWidth, scrollViewHeight);
     self.contentInset = UIEdgeInsetsMake(0, scrollViewWidth, 0, 2 * scrollViewWidth);
-//  } else {
-//    self.leftButton.frame = CGRectMake(0, -scrollViewHeight, scrollViewWidth, scrollViewHeight);
-//    self.currentButton.frame = CGRectMake(0, 0, scrollViewWidth, scrollViewHeight);
-//    self.rightButton.frame = CGRectMake(0, scrollViewHeight, scrollViewWidth, scrollViewHeight);
-//    self.contentInset = UIEdgeInsetsMake(scrollViewHeight, 0, 2 * scrollViewHeight, 0);
-//  }
+  } else {
+    self.leftButton.frame = CGRectMake(0, -scrollViewHeight, scrollViewWidth, scrollViewHeight);
+    self.currentButton.frame = CGRectMake(0, 0, scrollViewWidth, scrollViewHeight);
+    self.rightButton.frame = CGRectMake(0, scrollViewHeight, scrollViewWidth, scrollViewHeight);
+    self.contentInset = UIEdgeInsetsMake(scrollViewHeight, 0, 2 * scrollViewHeight, 0);
+  }
 }
 
 - (void)setItems:(NSArray *)items {
@@ -94,39 +87,54 @@ typedef enum {
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-  if (self.contentOffset.x < 0 || self.contentOffset.y < 0) {
-    [self updateButtonsWithScrollDirection:InfiniteScrollDirectionUpRight];
-  } else if (self.contentOffset.x > 0 || self.contentOffset.y > 0) {
-    [self updateButtonsWithScrollDirection:InfiniteScrollDirectionDownLeft];
-  }
-  self.contentOffset = CGPointMake(0, 0);
+  [self updateButtons];
 }
 
-- (void)updateButtonsWithScrollDirection:(InfiniteScrollDirection)direction {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
   
-  NSInteger firstTag = [self.leftButton tag];
-  NSInteger secondTag = [self.currentButton tag];
-  NSInteger thirdTag = [self.rightButton tag];
-  
-  if (direction == InfiniteScrollDirectionUpRight) {
-    [self.currentButton setTag:firstTag];
-    [self.rightButton setTag:secondTag];
-    NSInteger tempTag = firstTag - 1 < 0 ? self.items.count - 1 : firstTag - 1;
-    [self.leftButton setTag:tempTag];
+  CGFloat firstDistance = 0;
+  CGFloat secondDistance = 0;
+  CGFloat thirdDistance = 0;
+  if (self.scrollDirection == XYInfiniteScrollViewDirectionPortrait) {
+    firstDistance = fabs(self.contentOffset.y - self.leftButton.frame.origin.y);
+    secondDistance = fabs(self.contentOffset.y - self.currentButton.frame.origin.y);
+    thirdDistance = fabs(self.contentOffset.y - self.rightButton.frame.origin.y);
   } else {
-    [self.leftButton setTag:secondTag];
-    [self.currentButton setTag:thirdTag];
-    NSInteger tempTag = thirdTag + 1 >= self.items.count ? 0 : thirdTag + 1;
-    [self.rightButton setTag:tempTag];
+    firstDistance = fabs(self.contentOffset.x - self.leftButton.frame.origin.x);
+    secondDistance = fabs(self.contentOffset.x - self.currentButton.frame.origin.x);
+    thirdDistance = fabs(self.contentOffset.x - self.rightButton.frame.origin.x);
   }
   
+  self.currentButton.tag = [self tagWithShortestDistanceWithLeftDistance:firstDistance
+                                                         currentDistance:secondDistance
+                                                           rightDistance:thirdDistance];
+//  NSLog(@"left: %ld, currnet: %ld, right: %ld", leftImage, currentImage, rightImage);
+}
+
+- (NSInteger)tagWithShortestDistanceWithLeftDistance:(CGFloat)left currentDistance:(CGFloat)current rightDistance:(CGFloat)right {
+  if (left <= current) {
+    return self.leftButton.tag;
+  } else if (right <= current) {
+    return self.rightButton.tag;
+  }
+  return self.currentButton.tag;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
   [self updateButtons];
 }
 
 - (void)updateButtons {
+  self.leftButton.tag = self.currentButton.tag - 1 < 0 ? self.items.count - 1 : self.currentButton.tag - 1;
+  self.rightButton.tag = self.currentButton.tag + 1 >= self.items.count ? 0 : self.currentButton.tag + 1;
+  
   self.leftButton.item = self.items[self.leftButton.tag];
   self.currentButton.item = self.items[self.currentButton.tag];
   self.rightButton.item = self.items[self.rightButton.tag];
+  
+  self.contentOffset = CGPointZero;
+  
+//  NSLog(@"leftTAG: %ld, currnetTAG: %ld, rightTAG: %ld", self.leftButton.tag, self.currentButton.tag, self.rightButton.tag);
 }
 
 @end

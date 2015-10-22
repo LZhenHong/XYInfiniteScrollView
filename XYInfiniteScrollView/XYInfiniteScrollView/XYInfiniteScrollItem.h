@@ -14,13 +14,13 @@
 typedef void(^InfiniteScrollItemOperationBlock)(XYInfiniteScrollItem *item);
 
 typedef enum {
-  XYInfiniteScrollItemPositionHidden,
+  XYInfiniteScrollItemTextPositionHidden,
 // TODO
-//  XYInfiniteScrollItemPositionLeft,
-//  XYInfiniteScrollItemPositionRight,
-  XYInfiniteScrollItemPositioTop,
-  XYInfiniteScrollItemPositionBottom
-}XYInfiniteScrollItemPosition;
+//  XYInfiniteScrollItemTextPositionLeft,
+//  XYInfiniteScrollItemTextPositionRight,
+  XYInfiniteScrollItemTextPositionTop,
+  XYInfiniteScrollItemTextPositionBottom
+}XYInfiniteScrollItemTextPosition;
 
 @interface XYInfiniteScrollItem : NSObject
 
@@ -30,15 +30,15 @@ typedef enum {
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, copy) InfiniteScrollItemOperationBlock operation;
-@property (nonatomic, assign) XYInfiniteScrollItemPosition position;
+@property (nonatomic, assign) XYInfiniteScrollItemTextPosition position;
 
 
 
 - (instancetype)initWithTitle:(NSString *)title
                         image:(UIImage *)image
-                     position:(XYInfiniteScrollItemPosition)position;
+                     position:(XYInfiniteScrollItemTextPosition)position;
 
 + (instancetype)infiniteScrollItemWithTitle:(NSString *)title
                                       image:(UIImage *)image
-                                   position:(XYInfiniteScrollItemPosition)position;
+                                   position:(XYInfiniteScrollItemTextPosition)position;
 @end
