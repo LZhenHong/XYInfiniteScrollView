@@ -20,7 +20,7 @@ typedef enum {
 //  XYInfiniteScrollItemTextPositionRight,
   XYInfiniteScrollItemTextPositionTop,
   XYInfiniteScrollItemTextPositionBottom
-}XYInfiniteScrollItemTextPosition;
+} XYInfiniteScrollItemTextPosition;
 
 @interface XYInfiniteScrollItem : NSObject
 
@@ -28,17 +28,27 @@ typedef enum {
  *  文字默认隐藏，设置 title 之后，还需设置 position
  */
 @property (nonatomic, copy) NSString *title;
-@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, copy) NSString *imageName;
+
+@property (nonatomic, assign) CGFloat maxTitleWidth;
+/**
+ *  当同时需要控制 height\width 的时候就必须使用
+ */
+@property (nonatomic, assign) CGSize maxTitleSize;
+
+@property (nonatomic, strong) UIFont *titleFont;
+@property (nonatomic, strong) UIColor *titleColor;
+@property (nonatomic, strong) UIColor *titleBackgroundColor;
+
 @property (nonatomic, copy) InfiniteScrollItemOperationBlock operation;
 @property (nonatomic, assign) XYInfiniteScrollItemTextPosition position;
 
 
-
 - (instancetype)initWithTitle:(NSString *)title
-                        image:(UIImage *)image
+                    imageName:(NSString *)imageName
                      position:(XYInfiniteScrollItemTextPosition)position;
 
 + (instancetype)infiniteScrollItemWithTitle:(NSString *)title
-                                      image:(UIImage *)image
+                                  imageName:(NSString *)imageName
                                    position:(XYInfiniteScrollItemTextPosition)position;
 @end

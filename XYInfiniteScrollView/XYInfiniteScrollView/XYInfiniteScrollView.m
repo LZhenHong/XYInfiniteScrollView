@@ -11,9 +11,12 @@
 #import "XYInfiniteScrollViewButton.h"
 
 @interface XYInfiniteScrollView () <UIScrollViewDelegate>
-@property (nonatomic, weak) XYInfiniteScrollViewButton *leftButton;
-@property (nonatomic, weak) XYInfiniteScrollViewButton *currentButton;
-@property (nonatomic, weak) XYInfiniteScrollViewButton *rightButton;
+@property (nonatomic, strong) XYInfiniteScrollViewButton *leftButton;
+@property (nonatomic, strong) XYInfiniteScrollViewButton *currentButton;
+@property (nonatomic, strong) XYInfiniteScrollViewButton *rightButton;
+
+@property (nonatomic, weak) UIPageControl *pageControl;
+@property (nonatomic, strong) UIScrollView *scrollView;
 @end
 
 @implementation XYInfiniteScrollView
@@ -21,33 +24,31 @@
 - (instancetype)init {
   if (self = [super init]) {
     
+    self.scrollView = [[UIScrollView alloc] init];
+    self.scrollView.pagingEnabled = YES;
+    self.scrollView.showsHorizontalScrollIndicator = NO;
+    self.scrollView.showsVerticalScrollIndicator = NO;
+    self.scrollView.bounces = NO;
+    [self addSubview:self.scrollView];
+    self.scrollView.delegate = self;
+    
     [self setupButtons];
     
     self.scrollDirection = XYInfiniteScrollViewDirectionLandscape;
-    
     self.backgroundColor = [UIColor clearColor];
-    self.pagingEnabled = YES;
-    self.showsHorizontalScrollIndicator = NO;
-    self.showsVerticalScrollIndicator = NO;
-    self.bounces = NO;
-    
-    self.delegate = self;
   }
   return self;
 }
 
 - (void)setupButtons {
-  XYInfiniteScrollViewButton *leftButton = [[XYInfiniteScrollViewButton alloc] init];
-  [self addSubview:leftButton];
-  self.leftButton = leftButton;
+  self.leftButton = [[XYInfiniteScrollViewButton alloc] init];
+  [self.scrollView addSubview:self.leftButton];
   
-  XYInfiniteScrollViewButton *currentButton = [[XYInfiniteScrollViewButton alloc] init];
-  [self addSubview:currentButton];
-  self.currentButton = currentButton;
+  self.currentButton = [[XYInfiniteScrollViewButton alloc] init];
+  [self.scrollView addSubview:self.currentButton];
   
-  XYInfiniteScrollViewButton *rightButton = [[XYInfiniteScrollViewButton alloc] init];
-  [self addSubview:rightButton];
-  self.rightButton = rightButton;
+  self.rightButton = [[XYInfiniteScrollViewButton alloc] init];
+  [self.scrollView addSubview:self.rightButton];
 }
 
 - (void)setScrollDirection:(XYInfiniteScrollViewDirection)scrollDirection {
@@ -56,24 +57,58 @@
   [self updateButtons];
 }
 
+- (void)setPageControlHidden:(BOOL)pageControlHidden {
+  _pageControlHidden = pageControlHidden;
+  
+  if (pageControlHidden) {
+    [self.pageControl removeFromSuperview];
+  } else {
+    [self setupPageControl];
+  }
+}
+
+- (void)setPageControlCenter:(CGPoint)pageControlCenter {
+  _pageControlCenter = pageControlCenter;
+  
+  self.pageControl.center = pageControlCenter;
+}
+
 - (void)layoutSubviews {
   [super layoutSubviews];
+  
+  self.scrollView.frame = self.bounds;
+  
   [self resetButtonPosition];
+  
+  if (!self.isPageControlHidden) {
+    [self setupPageControl];
+  }
 }
 
 - (void)resetButtonPosition {
-  CGFloat scrollViewWidth = self.bounds.size.width;
-  CGFloat scrollViewHeight = self.bounds.size.height;
+  CGFloat scrollViewWidth = self.scrollView.bounds.size.width;
+  CGFloat scrollViewHeight = self.scrollView.bounds.size.height;
   if (self.scrollDirection == XYInfiniteScrollViewDirectionLandscape) {
     self.leftButton.frame = CGRectMake(-scrollViewWidth, 0, scrollViewWidth, scrollViewHeight);
     self.currentButton.frame = CGRectMake(0, 0, scrollViewWidth, scrollViewHeight);
     self.rightButton.frame = CGRectMake(scrollViewWidth, 0, scrollViewWidth, scrollViewHeight);
-    self.contentInset = UIEdgeInsetsMake(0, scrollViewWidth, 0, 2 * scrollViewWidth);
+    self.scrollView.contentInset = UIEdgeInsetsMake(0, scrollViewWidth, 0, 2 * scrollViewWidth);
   } else {
     self.leftButton.frame = CGRectMake(0, -scrollViewHeight, scrollViewWidth, scrollViewHeight);
     self.currentButton.frame = CGRectMake(0, 0, scrollViewWidth, scrollViewHeight);
     self.rightButton.frame = CGRectMake(0, scrollViewHeight, scrollViewWidth, scrollViewHeight);
-    self.contentInset = UIEdgeInsetsMake(scrollViewHeight, 0, 2 * scrollViewHeight, 0);
+    self.scrollView.contentInset = UIEdgeInsetsMake(scrollViewHeight, 0, 2 * scrollViewHeight, 0);
+  }
+}
+
+- (void)setupPageControl {
+  if (self.pageControl == nil) {
+    UIPageControl *pageControl = [[UIPageControl alloc] init];
+    pageControl.numberOfPages = self.items.count;
+    pageControl.currentPage = self.currentButton.tag;
+    pageControl.center = !CGPointEqualToPoint(self.pageControlCenter, CGPointZero) ? self.pageControlCenter : CGPointMake(self.bounds.size.width * 0.5, self.currentButton.pageControlCenterY);
+    [self addSubview:pageControl];
+    self.pageControl = pageControl;
   }
 }
 
@@ -95,20 +130,22 @@
   CGFloat firstDistance = 0;
   CGFloat secondDistance = 0;
   CGFloat thirdDistance = 0;
+  
   if (self.scrollDirection == XYInfiniteScrollViewDirectionPortrait) {
-    firstDistance = fabs(self.contentOffset.y - self.leftButton.frame.origin.y);
-    secondDistance = fabs(self.contentOffset.y - self.currentButton.frame.origin.y);
-    thirdDistance = fabs(self.contentOffset.y - self.rightButton.frame.origin.y);
+    firstDistance = fabs(self.scrollView.contentOffset.y - self.leftButton.frame.origin.y);
+    secondDistance = fabs(self.scrollView.contentOffset.y - self.currentButton.frame.origin.y);
+    thirdDistance = fabs(self.scrollView.contentOffset.y - self.rightButton.frame.origin.y);
   } else {
-    firstDistance = fabs(self.contentOffset.x - self.leftButton.frame.origin.x);
-    secondDistance = fabs(self.contentOffset.x - self.currentButton.frame.origin.x);
-    thirdDistance = fabs(self.contentOffset.x - self.rightButton.frame.origin.x);
+    firstDistance = fabs(self.scrollView.contentOffset.x - self.leftButton.frame.origin.x);
+    secondDistance = fabs(self.scrollView.contentOffset.x - self.currentButton.frame.origin.x);
+    thirdDistance = fabs(self.scrollView.contentOffset.x - self.rightButton.frame.origin.x);
   }
   
   self.currentButton.tag = [self tagWithShortestDistanceWithLeftDistance:firstDistance
                                                          currentDistance:secondDistance
                                                            rightDistance:thirdDistance];
-//  NSLog(@"left: %ld, currnet: %ld, right: %ld", leftImage, currentImage, rightImage);
+  self.pageControl.currentPage = self.currentButton.tag;
+//  NSLog(@"left: %ld, current: %ld, right: %ld", leftImage, currentImage, rightImage);
 }
 
 - (NSInteger)tagWithShortestDistanceWithLeftDistance:(CGFloat)left currentDistance:(CGFloat)current rightDistance:(CGFloat)right {
@@ -131,10 +168,9 @@
   self.leftButton.item = self.items[self.leftButton.tag];
   self.currentButton.item = self.items[self.currentButton.tag];
   self.rightButton.item = self.items[self.rightButton.tag];
-  
-  self.contentOffset = CGPointZero;
-  
-//  NSLog(@"leftTAG: %ld, currnetTAG: %ld, rightTAG: %ld", self.leftButton.tag, self.currentButton.tag, self.rightButton.tag);
+
+  self.scrollView.contentOffset = CGPointZero;
+//  NSLog(@"leftTAG: %ld, currentTAG: %ld, rightTAG: %ld", self.leftButton.tag, self.currentButton.tag, self.rightButton.tag);
 }
 
 @end

@@ -14,4 +14,6 @@
 
 @property (nonatomic, strong) XYInfiniteScrollItem *item;
 
+@property (nonatomic, assign, readonly) CGFloat pageControlCenterY;
+
 @end

@@ -21,16 +21,20 @@
     NSMutableArray *tempItems = [NSMutableArray array];
     for (int i = 0; i < 5; ++i) {
       NSString *imageName = [NSString stringWithFormat:@"Image_%d", i];
-      UIImage *image = [UIImage imageNamed:imageName];
       
       XYInfiniteScrollItem *item = [[XYInfiniteScrollItem alloc] init];
-      item.image = image;
+      item.imageName = imageName;
       item.operation = ^(XYInfiniteScrollItem *blockItem) {
         NSLog(@"%@", blockItem.title);
       };
+      item.title = [NSString stringWithFormat:@"ImageName -> %@", imageName];
+      item.titleFont = [UIFont systemFontOfSize:15];
+      item.titleColor = [UIColor redColor];
+      item.titleBackgroundColor = [UIColor blueColor];
       
-      item.position = XYInfiniteScrollItemTextPositionBottom;
-      item.title = [NSString stringWithFormat:@"----> %d", i];
+//      item.position = XYInfiniteScrollItemTextPositionHidden;
+      item.position = XYInfiniteScrollItemTextPositionTop;
+      item.maxTitleWidth = self.view.frame.size.width * 0.5;
       
       [tempItems addObject:item];
     }
@@ -56,8 +60,10 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
   if (self.isv.scrollDirection == XYInfiniteScrollViewDirectionPortrait) {
     self.isv.scrollDirection = XYInfiniteScrollViewDirectionLandscape;
+    self.isv.pageControlHidden = NO;
   } else {
     self.isv.scrollDirection = XYInfiniteScrollViewDirectionPortrait;
+    self.isv.pageControlHidden = YES;
   }
 }
 
