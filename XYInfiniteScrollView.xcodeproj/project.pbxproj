@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		052633B21BDE81FD00096EB1 /* XYWeakTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 052633B11BDE81FD00096EB1 /* XYWeakTimer.m */; };
 		0537274F1BD6575900EC4882 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0537274E1BD6575900EC4882 /* main.m */; };
 		053727521BD6575900EC4882 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 053727511BD6575900EC4882 /* AppDelegate.m */; };
 		053727581BD6575900EC4882 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 053727561BD6575900EC4882 /* Main.storyboard */; };
@@ -14,10 +15,10 @@
 		0537275D1BD6575900EC4882 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0537275B1BD6575900EC4882 /* LaunchScreen.storyboard */; };
 		053727681BD6575900EC4882 /* XYInfiniteScrollViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 053727671BD6575900EC4882 /* XYInfiniteScrollViewTests.m */; };
 		053727731BD6575900EC4882 /* XYInfiniteScrollViewUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 053727721BD6575900EC4882 /* XYInfiniteScrollViewUITests.m */; };
-		053727851BD6576D00EC4882 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 053727801BD6576D00EC4882 /* ViewController.m */; settings = {ASSET_TAGS = (); }; };
-		05FA95BC1BD68B6C0089BC4A /* XYInfiniteScrollItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA95B71BD68B6C0089BC4A /* XYInfiniteScrollItem.m */; settings = {ASSET_TAGS = (); }; };
-		05FA95BD1BD68B6C0089BC4A /* XYInfiniteScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA95B91BD68B6C0089BC4A /* XYInfiniteScrollView.m */; settings = {ASSET_TAGS = (); }; };
-		05FA95BE1BD68B6C0089BC4A /* XYInfiniteScrollViewButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA95BB1BD68B6C0089BC4A /* XYInfiniteScrollViewButton.m */; settings = {ASSET_TAGS = (); }; };
+		053727851BD6576D00EC4882 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 053727801BD6576D00EC4882 /* ViewController.m */; };
+		05FA95BC1BD68B6C0089BC4A /* XYInfiniteScrollItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA95B71BD68B6C0089BC4A /* XYInfiniteScrollItem.m */; };
+		05FA95BD1BD68B6C0089BC4A /* XYInfiniteScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA95B91BD68B6C0089BC4A /* XYInfiniteScrollView.m */; };
+		05FA95BE1BD68B6C0089BC4A /* XYInfiniteScrollViewButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 05FA95BB1BD68B6C0089BC4A /* XYInfiniteScrollViewButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		052633B01BDE81FD00096EB1 /* XYWeakTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYWeakTimer.h; sourceTree = "<group>"; };
+		052633B11BDE81FD00096EB1 /* XYWeakTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYWeakTimer.m; sourceTree = "<group>"; };
 		0537274A1BD6575900EC4882 /* InfiniteScrollView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfiniteScrollView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0537274E1BD6575900EC4882 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		053727501BD6575900EC4882 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -161,6 +164,8 @@
 				05FA95BB1BD68B6C0089BC4A /* XYInfiniteScrollViewButton.m */,
 				05FA95B81BD68B6C0089BC4A /* XYInfiniteScrollView.h */,
 				05FA95B91BD68B6C0089BC4A /* XYInfiniteScrollView.m */,
+				052633B01BDE81FD00096EB1 /* XYWeakTimer.h */,
+				052633B11BDE81FD00096EB1 /* XYWeakTimer.m */,
 			);
 			path = XYInfiniteScrollView;
 			sourceTree = "<group>";
@@ -302,6 +307,7 @@
 				05FA95BD1BD68B6C0089BC4A /* XYInfiniteScrollView.m in Sources */,
 				053727521BD6575900EC4882 /* AppDelegate.m in Sources */,
 				05FA95BC1BD68B6C0089BC4A /* XYInfiniteScrollItem.m in Sources */,
+				052633B21BDE81FD00096EB1 /* XYWeakTimer.m in Sources */,
 				0537274F1BD6575900EC4882 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

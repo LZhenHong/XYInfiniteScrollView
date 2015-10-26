@@ -9,6 +9,7 @@
 #import "XYInfiniteScrollView.h"
 #import "XYInfiniteScrollItem.h"
 #import "XYInfiniteScrollViewButton.h"
+#import "XYWeakTimer.h"
 
 @interface XYInfiniteScrollView () <UIScrollViewDelegate>
 @property (nonatomic, strong) XYInfiniteScrollViewButton *leftButton;
@@ -16,6 +17,7 @@
 @property (nonatomic, strong) XYInfiniteScrollViewButton *rightButton;
 
 @property (nonatomic, weak) UIPageControl *pageControl;
+@property (nonatomic, weak) NSTimer *timer;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @end
 
@@ -51,28 +53,6 @@
   [self.scrollView addSubview:self.rightButton];
 }
 
-- (void)setScrollDirection:(XYInfiniteScrollViewDirection)scrollDirection {
-  _scrollDirection = scrollDirection;
-  [self resetButtonPosition];
-  [self updateButtons];
-}
-
-- (void)setPageControlHidden:(BOOL)pageControlHidden {
-  _pageControlHidden = pageControlHidden;
-  
-  if (pageControlHidden) {
-    [self.pageControl removeFromSuperview];
-  } else {
-    [self setupPageControl];
-  }
-}
-
-- (void)setPageControlCenter:(CGPoint)pageControlCenter {
-  _pageControlCenter = pageControlCenter;
-  
-  self.pageControl.center = pageControlCenter;
-}
-
 - (void)layoutSubviews {
   [super layoutSubviews];
   
@@ -101,12 +81,85 @@
   }
 }
 
+
+
+#pragma mark - setter
+
+- (void)setScrollDirection:(XYInfiniteScrollViewDirection)scrollDirection {
+  _scrollDirection = scrollDirection;
+  [self resetButtonPosition];
+  [self updateButtons];
+}
+
+- (void)setPageControlHidden:(BOOL)pageControlHidden {
+  _pageControlHidden = pageControlHidden;
+  
+  if (pageControlHidden) {
+    [self.pageControl removeFromSuperview];
+    self.pageControl = nil;
+  } else {
+    [self setupPageControl];
+  }
+}
+
+- (void)setPageControlCenter:(CGPoint)pageControlCenter {
+  _pageControlCenter = pageControlCenter;
+  
+  self.pageControl.center = pageControlCenter;
+}
+
+- (void)setTimerEnabled:(BOOL)timerEnabled {
+  _timerEnabled = timerEnabled;
+  
+  NSTimeInterval tempInterval = self.timeInterval == 0.0f ? 1.0f : self.timeInterval;
+  if (timerEnabled) {
+    [self.timer invalidate];
+    self.timer = [XYWeakTimer xy_scheduledTimerWithTimeInterval:tempInterval block:^(id userInfo) {
+      [self nextImage];
+    } userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+  } else {
+    [self.timer invalidate];
+  }
+}
+
+- (void)nextImage {
+  if (self.scrollDirection == XYInfiniteScrollViewDirectionPortrait) {
+    [self.scrollView setContentOffset:CGPointMake(0, self.scrollView.bounds.size.height) animated:YES];
+  } else {
+    [self.scrollView setContentOffset:CGPointMake(self.scrollView.bounds.size.width, 0) animated:YES];
+  }
+  
+  [self scrollViewDidScroll:self.scrollView];
+  [self updateButtons];
+}
+
+- (void)setCustomPageControl:(UIPageControl *)customPageControl {
+  _customPageControl = customPageControl;
+  
+  customPageControl.center = self.pageControl.center;
+  customPageControl.currentPage = self.currentButton.tag;
+  customPageControl.numberOfPages = self.items.count;
+  customPageControl.userInteractionEnabled = NO;
+  [self addSubview:customPageControl];
+  [self setPageControlHidden:YES];
+  
+  self.pageControl = customPageControl;
+}
+
+- (void)setTimeInterval:(NSTimeInterval)timeInterval {
+  _timeInterval = timeInterval;
+  
+  [self setTimerEnabled:self.isTimerEnabled];
+}
+
 - (void)setupPageControl {
   if (self.pageControl == nil) {
     UIPageControl *pageControl = [[UIPageControl alloc] init];
     pageControl.numberOfPages = self.items.count;
     pageControl.currentPage = self.currentButton.tag;
     pageControl.center = !CGPointEqualToPoint(self.pageControlCenter, CGPointZero) ? self.pageControlCenter : CGPointMake(self.bounds.size.width * 0.5, self.currentButton.pageControlCenterY);
+    pageControl.userInteractionEnabled = NO;
     [self addSubview:pageControl];
     self.pageControl = pageControl;
   }
@@ -121,8 +174,13 @@
   [self updateButtons];
 }
 
+
+
+#pragma mark - scrollView delegate
+
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
   [self updateButtons];
+  [self.timer invalidate];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -157,9 +215,17 @@
   return self.currentButton.tag;
 }
 
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+  [self setTimerEnabled:YES];
+}
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
   [self updateButtons];
 }
+
+
+
+#pragma mark - private methods
 
 - (void)updateButtons {
   self.leftButton.tag = self.currentButton.tag - 1 < 0 ? self.items.count - 1 : self.currentButton.tag - 1;

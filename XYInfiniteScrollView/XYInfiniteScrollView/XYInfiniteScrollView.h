@@ -18,15 +18,13 @@ typedef enum {
 
 @interface XYInfiniteScrollView : UIView
 /**
- *  装的是 XYInfiniteScrollItem 对象
+ *  XYInfiniteScrollItem 对象数组
  */
 @property (nonatomic, strong) NSArray *items;
 /**
  *  默认是 XYInfiniteScrollViewDirectionLanscape
  */
 @property (nonatomic, assign) XYInfiniteScrollViewDirection scrollDirection;
-
-@property (nonatomic, assign, getter=isPageControlHidden) BOOL pageControlHidden;
 /**
  *  只有在 pageControlHidden == NO 的时候才有用，相对于 infinitScrollView.bounds 来说的
  */
@@ -35,5 +33,18 @@ typedef enum {
 /**
  *  自定义的 pageControl
  */
-//@property (nonatomic, strong) UIPageControl *constomPageControl;
+@property (nonatomic, strong) UIPageControl *customPageControl;
+/**
+ *  自定义 pageControl 时该属性为 YES
+ */
+@property (nonatomic, assign, getter=isPageControlHidden) BOOL pageControlHidden;
+/**
+ *  是否开启定时器
+ */
+@property (nonatomic, assign, getter=isTimerEnabled) BOOL timerEnabled;
+/**
+ *  只有在 timerEnabled == YES 有用
+ *  默认 1.0f
+ */
+@property (nonatomic, assign) NSTimeInterval timeInterval;
 @end
