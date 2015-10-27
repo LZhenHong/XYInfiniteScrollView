@@ -63,6 +63,10 @@
   if (!self.isPageControlHidden) {
     [self setupPageControl];
   }
+  
+  if (self.isTimerEnabled) {
+    [self setupTimer];
+  }
 }
 
 - (void)resetButtonPosition {
@@ -79,6 +83,11 @@
     self.rightButton.frame = CGRectMake(0, scrollViewHeight, scrollViewWidth, scrollViewHeight);
     self.scrollView.contentInset = UIEdgeInsetsMake(scrollViewHeight, 0, 2 * scrollViewHeight, 0);
   }
+  self.scrollView.contentOffset = CGPointMake(0, 0);
+}
+
+- (void)dealloc {
+  [self.timer invalidate];
 }
 
 
@@ -87,6 +96,7 @@
 
 - (void)setScrollDirection:(XYInfiniteScrollViewDirection)scrollDirection {
   _scrollDirection = scrollDirection;
+  
   [self resetButtonPosition];
   [self updateButtons];
 }
@@ -111,15 +121,20 @@
 - (void)setTimerEnabled:(BOOL)timerEnabled {
   _timerEnabled = timerEnabled;
   
-  NSTimeInterval tempInterval = self.timeInterval == 0.0f ? 1.0f : self.timeInterval;
-  if (timerEnabled) {
+  [self setupTimer];
+}
+
+- (void)setupTimer {
+  if (self.timerEnabled) {
     [self.timer invalidate];
+    NSTimeInterval tempInterval = self.timeInterval == 0.0f ? 1.0f : self.timeInterval;
     self.timer = [XYWeakTimer xy_scheduledTimerWithTimeInterval:tempInterval block:^(id userInfo) {
       [self nextImage];
     } userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
   } else {
     [self.timer invalidate];
+    self.timer = nil;
   }
 }
 
@@ -134,19 +149,6 @@
   [self updateButtons];
 }
 
-- (void)setCustomPageControl:(UIPageControl *)customPageControl {
-  _customPageControl = customPageControl;
-  
-  customPageControl.center = self.pageControl.center;
-  customPageControl.currentPage = self.currentButton.tag;
-  customPageControl.numberOfPages = self.items.count;
-  customPageControl.userInteractionEnabled = NO;
-  [self addSubview:customPageControl];
-  [self setPageControlHidden:YES];
-  
-  self.pageControl = customPageControl;
-}
-
 - (void)setTimeInterval:(NSTimeInterval)timeInterval {
   _timeInterval = timeInterval;
   
@@ -155,14 +157,19 @@
 
 - (void)setupPageControl {
   if (self.pageControl == nil) {
-    UIPageControl *pageControl = [[UIPageControl alloc] init];
-    pageControl.numberOfPages = self.items.count;
-    pageControl.currentPage = self.currentButton.tag;
-    pageControl.center = !CGPointEqualToPoint(self.pageControlCenter, CGPointZero) ? self.pageControlCenter : CGPointMake(self.bounds.size.width * 0.5, self.currentButton.pageControlCenterY);
-    pageControl.userInteractionEnabled = NO;
-    [self addSubview:pageControl];
-    self.pageControl = pageControl;
+    if (self.customPageControl != nil) {
+      self.pageControl = self.customPageControl;
+    } else {
+      UIPageControl *pageControl = [[UIPageControl alloc] init];
+      self.pageControl = pageControl;
+    }
   }
+  
+  self.pageControl.numberOfPages = self.items.count;
+  self.pageControl.currentPage = self.currentButton.tag;
+  self.pageControl.center = !CGPointEqualToPoint(self.pageControlCenter, CGPointZero) ? self.pageControlCenter : CGPointMake(self.bounds.size.width * 0.5, self.currentButton.pageControlCenterY);
+  self.pageControl.userInteractionEnabled = NO;
+  [self addSubview:self.pageControl];
 }
 
 - (void)setItems:(NSArray *)items {
@@ -203,20 +210,20 @@
                                                          currentDistance:secondDistance
                                                            rightDistance:thirdDistance];
   self.pageControl.currentPage = self.currentButton.tag;
-//  NSLog(@"left: %ld, current: %ld, right: %ld", leftImage, currentImage, rightImage);
+//  NSLog(@"leftTAG: %ld, currentTAG: %ld, rightTAG: %ld", self.leftButton.tag, self.currentButton.tag, self.rightButton.tag);
 }
 
 - (NSInteger)tagWithShortestDistanceWithLeftDistance:(CGFloat)left currentDistance:(CGFloat)current rightDistance:(CGFloat)right {
-  if (left <= current) {
+  if (left < current) {
     return self.leftButton.tag;
-  } else if (right <= current) {
+  } else if (right < current) {
     return self.rightButton.tag;
   }
   return self.currentButton.tag;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-  [self setTimerEnabled:YES];
+  [self setTimerEnabled:self.isTimerEnabled];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
