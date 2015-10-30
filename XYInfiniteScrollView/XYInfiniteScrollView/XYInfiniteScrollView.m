@@ -58,15 +58,13 @@
   
   self.scrollView.frame = self.bounds;
   
-  [self resetButtonPosition];
-  
+  [self resetButtonPosition];  
+  [self setupTimer];
+
   if (!self.isPageControlHidden) {
     [self setupPageControl];
   }
   
-  if (self.isTimerEnabled) {
-    [self setupTimer];
-  }
 }
 
 - (void)resetButtonPosition {
@@ -88,6 +86,7 @@
 
 - (void)dealloc {
   [self.timer invalidate];
+  self.timer = nil;
 }
 
 
@@ -125,8 +124,9 @@
 }
 
 - (void)setupTimer {
-  if (self.timerEnabled) {
+  if (self.isTimerEnabled) {
     [self.timer invalidate];
+    self.timer = nil;
     NSTimeInterval tempInterval = self.timeInterval == 0.0f ? 1.0f : self.timeInterval;
     self.timer = [XYWeakTimer xy_scheduledTimerWithTimeInterval:tempInterval block:^(id userInfo) {
       [self nextImage];
@@ -188,6 +188,7 @@
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
   [self updateButtons];
   [self.timer invalidate];
+  self.timer = nil;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -223,7 +224,7 @@
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-  [self setTimerEnabled:self.isTimerEnabled];
+  [self setupTimer];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {

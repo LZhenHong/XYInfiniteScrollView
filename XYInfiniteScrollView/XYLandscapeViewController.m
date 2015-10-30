@@ -7,8 +7,7 @@
 //
 
 #import "XYLandscapeViewController.h"
-#import "XYInfiniteScrollView.h"
-#import "XYInfiniteScrollItem.h"
+#import "XYInfiniteScrollViewHeader.h"
 
 
 @interface XYLandscapeViewController ()

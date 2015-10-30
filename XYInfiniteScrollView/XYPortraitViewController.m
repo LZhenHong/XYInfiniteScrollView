@@ -7,8 +7,7 @@
 //
 
 #import "XYPortraitViewController.h"
-#import "XYInfiniteScrollView.h"
-#import "XYInfiniteScrollItem.h"
+#import "XYInfiniteScrollViewHeader.h"
 
 @interface XYPortraitViewController ()
 @property (nonatomic, strong) NSArray *items;

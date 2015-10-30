@@ -11,6 +11,7 @@
 typedef void(^XYWeakTimerBlock)(id userInfo);
 
 @interface XYWeakTimer : NSObject
+
 + (NSTimer *)xy_scheduledTimerWithTimeInterval:(NSTimeInterval)ti
                                         target:(id)aTarget
                                       selector:(SEL)aSelector
