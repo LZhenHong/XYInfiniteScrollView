@@ -45,10 +45,8 @@ typedef enum {
 
 
 - (instancetype)initWithTitle:(NSString *)title
-                    imageName:(NSString *)imageName
-                     position:(XYInfiniteScrollItemTextPosition)position;
+                    imageName:(NSString *)imageName;
 
 + (instancetype)infiniteScrollItemWithTitle:(NSString *)title
-                                  imageName:(NSString *)imageName
-                                   position:(XYInfiniteScrollItemTextPosition)position;
+                                  imageName:(NSString *)imageName;
 @end

@@ -9,7 +9,7 @@
 #import "XYInfiniteScrollView.h"
 #import "XYInfiniteScrollItem.h"
 #import "XYInfiniteScrollViewButton.h"
-#import "XYWeakTimer.h"
+#import "HWWeakTimer.h"
 
 @interface XYInfiniteScrollView () <UIScrollViewDelegate>
 @property (nonatomic, strong) XYInfiniteScrollViewButton *leftButton;
@@ -128,7 +128,7 @@
     [self.timer invalidate];
     self.timer = nil;
     NSTimeInterval tempInterval = self.timeInterval == 0.0f ? 1.0f : self.timeInterval;
-    self.timer = [XYWeakTimer xy_scheduledTimerWithTimeInterval:tempInterval block:^(id userInfo) {
+    self.timer = [HWWeakTimer scheduledTimerWithTimeInterval:tempInterval block:^(id userInfo) {
       [self nextImage];
     } userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];

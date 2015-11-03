@@ -80,6 +80,7 @@ static CGFloat margin = 10.0;
   _item = item;
   
   UIImage *image = [UIImage imageNamed:item.imageName];
+  
   [self setImage:image forState:UIControlStateNormal];
   [self setTitleColor:self.item.titleColor forState:UIControlStateNormal];
   [self setTitle:item.title forState:UIControlStateNormal];

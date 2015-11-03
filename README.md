@@ -58,7 +58,7 @@ TODO
 ##More
 
 
-工程中使用的 XYWeakTimer 是仿照该 [博客](http://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/) 写的，用来解决 NSTimer 使用时的循环引用，如果感兴趣可以阅读该博客
+工程中使用的 HWWeakTimer 是这篇 [博客](http://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/) 讲的，用来解决 NSTimer 使用时的循环引用，如果感兴趣可以阅读该博客
 
 ----
 ### 暂时没有完成全部功能，难免会有许多 bug，请谨慎下载
