@@ -20,7 +20,7 @@
   if (!_items) {
     NSMutableArray *tempItems = [NSMutableArray array];
     for (int i = 0; i < 5; ++i) {
-      NSString *imageName = [NSString stringWithFormat:@"Image_%d", i];
+      NSString *imageName = [NSString stringWithFormat:@"Image_%d", i + 1];
       
       XYInfiniteScrollItem *item = [[XYInfiniteScrollItem alloc] init];
       item.imageName = imageName;
@@ -47,6 +47,7 @@
   
   self.view.backgroundColor = [UIColor lightGrayColor];
   self.title = @"Portrait";
+
   
   XYInfiniteScrollView *isv = [[XYInfiniteScrollView alloc] init];
   isv.center = self.view.center;

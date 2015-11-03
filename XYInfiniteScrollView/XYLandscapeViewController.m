@@ -20,7 +20,7 @@
   if (!_items) {
     NSMutableArray *tempItems = [NSMutableArray array];
     for (int i = 0; i < 5; ++i) {
-      NSString *imageName = [NSString stringWithFormat:@"Image_%d", i];
+      NSString *imageName = [NSString stringWithFormat:@"Image_%d", i + 1];
       
       XYInfiniteScrollItem *item = [[XYInfiniteScrollItem alloc] init];
       item.imageName = imageName;
@@ -62,7 +62,7 @@
   isv.items = self.items;
   
   isv.timerEnabled = YES;
-//  isv.timeInterval = 0.4f;
+  isv.timeInterval = 0.4f;
   
   isv.customPageControl = pageControl;
 
