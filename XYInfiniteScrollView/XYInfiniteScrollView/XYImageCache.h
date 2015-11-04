@@ -9,12 +9,13 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSUInteger, XYImageSourceType) {
-    XYImageSourceTypeWeb,
-    XYImageSourceTypeMemory,
-    XYImageSourceTypeDisk
+  XYImageSourceTypeNone,
+  XYImageSourceTypeWeb,
+  XYImageSourceTypeMemory,
+  XYImageSourceTypeDisk
 };
 
-typedef void(^XYQueryImageCompletion)(UIImage *image, XYImageSourceType source, NSString *key);
+typedef void(^XYQueryImageCompletion)(UIImage *image, XYImageSourceType source);
 typedef void(^XYCacheImageCompletion)(BOOL isSucceeded);
 
 @interface XYImageCache : NSObject
@@ -22,7 +23,7 @@ typedef void(^XYCacheImageCompletion)(BOOL isSucceeded);
 /**
  *  是否缓存到磁盘中
  */
-@property (nonatomic, assign) BOOL diskStored;
+@property (nonatomic, assign, getter=isDiskStored) BOOL diskStored;
 
 /**
  *  内存中最多缓存多少张图片
@@ -32,7 +33,7 @@ typedef void(^XYCacheImageCompletion)(BOOL isSucceeded);
 
 - (void)queryImageFromCacheWithKey:(NSString *)key completion:(XYQueryImageCompletion)completion;
 - (void)cacheImageWithKey:(NSString *)key image:(UIImage *)image completion:(XYCacheImageCompletion)completion;
-- (void)cacheImageOnlyInMemoryWithKey:(NSString *)key image:(UIImage *)image completion:(XYCacheImageCompletion)completion;
+- (void)cacheImageOnlyInMemoryWithKey:(NSString *)key image:(UIImage *)image;
 - (void)removeImageForKey:(NSString *)key;
 - (void)clearMemroyCache;
 - (void)clearDiskCache;

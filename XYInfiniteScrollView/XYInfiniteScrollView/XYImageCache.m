@@ -10,6 +10,7 @@
 #import <CommonCrypto/CommonDigest.h>
 
 
+#pragma mark  A category of NSString
 @interface NSString (MD5)
 - (NSString *)MD5String;
 @end
@@ -63,14 +64,14 @@
 @interface XYImageCache ()
 
 @property (nonatomic, strong) AutoPurgeCache *memoryCache;
-@property (nonatomic, copy) NSString *folderCachePath;
-// 后台缓存数据
-@property (nonatomic, strong) NSOperation *cacheOperation;
 @property (nonatomic, strong) NSFileManager *fileManager;
+@property (nonatomic, copy) NSString *folderCachePath;
 
 @end
 
-@implementation XYImageCache
+@implementation XYImageCache {
+  dispatch_queue_t _cacheQueue;
+}
 
 + (instancetype)sharedImageCache {
   static dispatch_once_t onceToken;
@@ -81,22 +82,125 @@
   return imageCache;
 }
 
+- (instancetype)init {
+  if (self = [super init]) {
+    _cacheQueue = dispatch_queue_create("cacheImageToDiskQueue", DISPATCH_QUEUE_SERIAL);
+  }
+  return self;
+}
+
 - (void)queryImageFromCacheWithKey:(NSString *)key completion:(XYQueryImageCompletion)completion {
-  NSString *cacheKey = [key MD5String];
-  id image = [self.memoryCache objectForKey:cacheKey];
+  if (!key) {
+    completion(nil, XYImageSourceTypeNone);
+    return;
+  }
   
+  UIImage *image = [self.memoryCache objectForKey:key];
   if (image) { // 内存缓存有
-    
-  // } else if () { // disk 查找
-    
-  // } else { // 发送网络请求
+    completion(image, XYImageSourceTypeMemory);
+    return;
+   }
   
+  image = [self diskCachedImageWithKey:key];
+  if (image) { // disk 查找
+    completion(image, XYImageSourceTypeDisk);
+    return;
+  }
+  
+  // TODO: download from Internet
+}
+
+- (void)cacheImageWithKey:(NSString *)key image:(UIImage *)image completion:(XYCacheImageCompletion)completion {
+  [self cacheImageOnlyInMemoryWithKey:key image:image];
+  
+  __block BOOL success = YES;
+  
+  // 异步缓存到 disk
+  if (self.isDiskStored) {
+    dispatch_async(_cacheQueue, ^{
+      if (![self.fileManager fileExistsAtPath:self.folderCachePath]) {
+        [self.fileManager createDirectoryAtPath:self.folderCachePath withIntermediateDirectories:YES attributes:nil error:nil];
+      }
+      
+      NSData *imageData = UIImagePNGRepresentation(image);
+      if (!imageData) {
+        imageData = UIImageJPEGRepresentation(image, 1.0f);
+      }
+      
+      if (imageData) {
+        NSString *cachePath = [self fullImageCachePathWithKey:key];
+        success = [self.fileManager createFileAtPath:cachePath contents:imageData attributes:nil];
+      }
+      
+      dispatch_async(dispatch_get_main_queue(), ^{
+        completion(success);
+      });
+    });
   }
 }
 
+- (void)cacheImageOnlyInMemoryWithKey:(NSString *)key image:(UIImage *)image {
+  [self.memoryCache setObject:image forKey:key];
+}
+
+- (void)clearMemroyCache {
+  [self.memoryCache removeAllObjects];
+}
+
+- (void)clearDiskCache {
+  if (self.isDiskStored) {
+    dispatch_async(_cacheQueue, ^{
+      [self.fileManager removeItemAtPath:self.folderCachePath error:nil];
+      [self.fileManager createDirectoryAtPath:self.folderCachePath withIntermediateDirectories:YES attributes:nil error:nil];
+    });
+  }
+}
+
+- (void)removeImageForKey:(NSString *)key {
+  if (!key) {
+    return;
+  }
+  
+  [self.memoryCache removeObjectForKey:key];
+  
+  if (self.isDiskStored) {
+    NSString *imageCachePath = [self fullImageCachePathWithKey:key];
+    BOOL existed = [self.fileManager fileExistsAtPath:imageCachePath];
+    if (existed) {
+      dispatch_async(_cacheQueue, ^{
+        [self.fileManager removeItemAtPath:imageCachePath error:nil];
+      });
+    }
+  }
+  
+}
+
+#pragma mark - Helper methods
+- (UIImage *)diskCachedImageWithKey:(NSString *)key {
+  NSString *fullCachePath = [self fullImageCachePathWithKey:key];
+  BOOL exists = [self.fileManager fileExistsAtPath:fullCachePath];
+  if (exists) {
+    NSData *imageData = [NSData dataWithContentsOfFile:fullCachePath];
+    UIImage *image = [UIImage imageWithData:imageData];
+    return image;
+  }
+  return nil;
+}
+
+
 - (NSString *)fullImageCachePathWithKey:(NSString *)cacheKey {
-  NSString *imagePath = [self.folderCachePath stringByAppendingPathComponent:cacheKey];
+  NSString *MD5CacheKey = [cacheKey MD5String];
+  NSString *imagePath = [self.folderCachePath stringByAppendingPathComponent:MD5CacheKey];
   return imagePath;
+}
+
+#pragma mark - getter
+- (AutoPurgeCache *)memoryCache {
+  if (!_memoryCache) {
+    _memoryCache = [[AutoPurgeCache alloc] init];
+    _memoryCache.countLimit = self.maxMemoryCacheNumber;
+  }
+  return _memoryCache;
 }
 
 - (NSString *)folderCachePath {
@@ -105,10 +209,10 @@
   return folderPath;
 }
 
-- (AutoPurgeCache *)memoryCache {
-  if (!_memoryCache) {
-    _memoryCache = [[AutoPurgeCache alloc] init];
+- (NSFileManager *)fileManager {
+  if (!_fileManager) {
+    _fileManager = [[NSFileManager alloc] init];
   }
-  return _memoryCache;
+  return _fileManager;
 }
 @end
