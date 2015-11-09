@@ -50,8 +50,10 @@ static CGFloat margin = 10.0;
 - (CGSize)maxSize {
   if (!CGSizeEqualToSize(self.item.maxTitleSize, CGSizeZero)) {
     return self.item.maxTitleSize;
-  } else {
+  } else if (self.item.maxTitleWidth != 0) {
     return CGSizeMake(self.item.maxTitleWidth, MAXFLOAT);
+  } else {
+    return CGSizeMake(self.superview.bounds.size.width - 2 * margin, MAXFLOAT);
   }
 }
 
@@ -69,7 +71,6 @@ static CGFloat margin = 10.0;
     return rect;
   }
   
-  // 文字计算 size 有 bug
   CGSize size = [self sizeForTitle];
   if (self.item.position == XYInfiniteScrollItemTextPositionTop) {
     rect = CGRectMake(margin, 0, size.width, size.height);
