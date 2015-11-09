@@ -16,6 +16,7 @@
 		053727731BD6575900EC4882 /* XYInfiniteScrollViewUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 053727721BD6575900EC4882 /* XYInfiniteScrollViewUITests.m */; };
 		054577EE1BDF6F6C0015C3A3 /* XYLandscapeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 054577EB1BDF6F6C0015C3A3 /* XYLandscapeViewController.m */; };
 		054577EF1BDF6F6C0015C3A3 /* XYPortraitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 054577ED1BDF6F6C0015C3A3 /* XYPortraitViewController.m */; };
+		054D14F91BF0C4090040433F /* XYDownloadImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 054D14F81BF0C4090040433F /* XYDownloadImageViewController.m */; };
 		057AB6C21BE8F29600EC22B5 /* HWWeakTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 057AB6C11BE8F29600EC22B5 /* HWWeakTimer.m */; };
 		05C790771BE91DF20033B235 /* XYImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C790741BE91DF20033B235 /* XYImageCache.m */; };
 		05C790781BE91DF20033B235 /* XYImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C790761BE91DF20033B235 /* XYImageDownloader.m */; };
@@ -60,6 +61,8 @@
 		054577EB1BDF6F6C0015C3A3 /* XYLandscapeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYLandscapeViewController.m; sourceTree = "<group>"; };
 		054577EC1BDF6F6C0015C3A3 /* XYPortraitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYPortraitViewController.h; sourceTree = "<group>"; };
 		054577ED1BDF6F6C0015C3A3 /* XYPortraitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYPortraitViewController.m; sourceTree = "<group>"; };
+		054D14F71BF0C4090040433F /* XYDownloadImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYDownloadImageViewController.h; sourceTree = "<group>"; };
+		054D14F81BF0C4090040433F /* XYDownloadImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYDownloadImageViewController.m; sourceTree = "<group>"; };
 		057AB6C01BE8F29600EC22B5 /* HWWeakTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HWWeakTimer.h; sourceTree = "<group>"; };
 		057AB6C11BE8F29600EC22B5 /* HWWeakTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HWWeakTimer.m; sourceTree = "<group>"; };
 		05C790731BE91DF20033B235 /* XYImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYImageCache.h; sourceTree = "<group>"; };
@@ -129,6 +132,8 @@
 				054577EB1BDF6F6C0015C3A3 /* XYLandscapeViewController.m */,
 				054577EC1BDF6F6C0015C3A3 /* XYPortraitViewController.h */,
 				054577ED1BDF6F6C0015C3A3 /* XYPortraitViewController.m */,
+				054D14F71BF0C4090040433F /* XYDownloadImageViewController.h */,
+				054D14F81BF0C4090040433F /* XYDownloadImageViewController.m */,
 				05FA95B51BD68B6C0089BC4A /* XYInfiniteScrollView */,
 				0537274D1BD6575900EC4882 /* Supporting Files */,
 			);
@@ -321,6 +326,7 @@
 				054577EE1BDF6F6C0015C3A3 /* XYLandscapeViewController.m in Sources */,
 				05FA95BE1BD68B6C0089BC4A /* XYInfiniteScrollViewButton.m in Sources */,
 				05C790771BE91DF20033B235 /* XYImageCache.m in Sources */,
+				054D14F91BF0C4090040433F /* XYDownloadImageViewController.m in Sources */,
 				054577EF1BDF6F6C0015C3A3 /* XYPortraitViewController.m in Sources */,
 				05FA95BD1BD68B6C0089BC4A /* XYInfiniteScrollView.m in Sources */,
 				053727521BD6575900EC4882 /* AppDelegate.m in Sources */,

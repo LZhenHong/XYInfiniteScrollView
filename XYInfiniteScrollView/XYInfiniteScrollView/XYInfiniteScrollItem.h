@@ -30,6 +30,8 @@ typedef enum {
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *imageName;
 
+@property (nonatomic, copy) NSString *imageURL;
+
 @property (nonatomic, assign) CGFloat maxTitleWidth;
 /**
  *  当同时需要控制 height\width 的时候就必须使用
@@ -47,6 +49,13 @@ typedef enum {
 - (instancetype)initWithTitle:(NSString *)title
                     imageName:(NSString *)imageName;
 
+- (instancetype)initWithTitle:(NSString *)title
+                     imageURL:(NSString *)imageURL;
+
+
 + (instancetype)infiniteScrollItemWithTitle:(NSString *)title
                                   imageName:(NSString *)imageName;
+
++ (instancetype)infiniteScrollItemWithTitle:(NSString *)title
+                                   imageURL:(NSString *)imageURL;
 @end

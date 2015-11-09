@@ -8,6 +8,11 @@
 
 #import "XYInfiniteScrollViewButton.h"
 #import "XYInfiniteScrollItem.h"
+#import "XYImageCache.h"
+
+@interface XYInfiniteScrollViewButton ()
+@property (nonatomic, strong) XYImageCache *imageCache;
+@end
 
 @implementation XYInfiniteScrollViewButton {
   CGFloat _pageControlCenterY;
@@ -64,6 +69,7 @@ static CGFloat margin = 10.0;
     return rect;
   }
   
+  // 文字计算 size 有 bug
   CGSize size = [self sizeForTitle];
   if (self.item.position == XYInfiniteScrollItemTextPositionTop) {
     rect = CGRectMake(margin, 0, size.width, size.height);
@@ -79,9 +85,15 @@ static CGFloat margin = 10.0;
 - (void)setItem:(XYInfiniteScrollItem *)item {
   _item = item;
   
-  UIImage *image = [UIImage imageNamed:item.imageName];
+  if (item.imageName) {
+    UIImage *image = [UIImage imageNamed:item.imageName];
+    [self setImage:image forState:UIControlStateNormal];
+  } else if (item.imageURL) {
+    [self.imageCache queryImageFromCacheWithKey:item.imageURL completion:^(UIImage *image, XYImageSourceType source) {
+      [self setImage:image forState:UIControlStateNormal];
+    }];
+  }
   
-  [self setImage:image forState:UIControlStateNormal];
   [self setTitleColor:self.item.titleColor forState:UIControlStateNormal];
   [self setTitle:item.title forState:UIControlStateNormal];
   self.titleLabel.font = self.item.titleFont;
@@ -93,6 +105,14 @@ static CGFloat margin = 10.0;
   if (self.item.operation != nil) {
     self.item.operation(weakItem);
   }
+}
+
+- (XYImageCache *)imageCache {
+  if (!_imageCache) {
+    _imageCache = [XYImageCache sharedImageCache];
+  }
+  
+  return _imageCache;
 }
 
 @end

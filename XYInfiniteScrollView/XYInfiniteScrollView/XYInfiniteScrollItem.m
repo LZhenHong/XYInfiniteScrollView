@@ -21,4 +21,16 @@
   return [[self alloc] initWithTitle:title imageName:imageName];
 }
 
+- (instancetype)initWithTitle:(NSString *)title imageURL:(NSString *)imageURL {
+  if (self = [super init]) {
+    self.title = [title copy];
+    self.imageURL = [imageURL copy];
+  }
+  return self;
+}
+
++ (instancetype)infiniteScrollItemWithTitle:(NSString *)title imageURL:(NSString *)imageURL {
+  return [[self alloc] initWithTitle:title imageURL:imageURL];
+}
+
 @end

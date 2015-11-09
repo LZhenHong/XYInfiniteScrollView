@@ -8,6 +8,7 @@
 
 #import "XYImageCache.h"
 #import <CommonCrypto/CommonDigest.h>
+#import "XYImageDownloader.h"
 
 
 #pragma mark  A category of NSString
@@ -85,6 +86,7 @@
 - (instancetype)init {
   if (self = [super init]) {
     _cacheQueue = dispatch_queue_create("cacheImageToDiskQueue", DISPATCH_QUEUE_SERIAL);
+    self.diskStored = YES;
   }
   return self;
 }
@@ -97,29 +99,50 @@
   
   UIImage *image = [self.memoryCache objectForKey:key];
   if (image) { // 内存缓存有
-    completion(image, XYImageSourceTypeMemory);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completion(image, XYImageSourceTypeMemory);
+    });
     return;
    }
   
   image = [self diskCachedImageWithKey:key];
   if (image) { // disk 查找
-    completion(image, XYImageSourceTypeDisk);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completion(image, XYImageSourceTypeDisk);
+    });
     return;
   }
   
-  // TODO: download from Internet
+  // download from Internet
+  [[XYImageDownloader sharedImageDownloader] downloadImageWithURLString:key completion:^(UIImage *image, NSError *error) {
+    if (error || image == nil) {
+      completion(nil, XYImageSourceTypeNone);
+    } else {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        completion(image, XYImageSourceTypeWeb);
+      });
+      [self cacheImageWithKey:key image:image completion:nil];
+    }
+  }];
 }
 
 - (void)cacheImageWithKey:(NSString *)key image:(UIImage *)image completion:(XYCacheImageCompletion)completion {
-  [self cacheImageOnlyInMemoryWithKey:key image:image];
+  if (!key) {
+    return;
+  }
   
-  __block BOOL success = YES;
+  [self cacheImageOnlyInMemoryWithKey:key image:image];
   
   // 异步缓存到 disk
   if (self.isDiskStored) {
     dispatch_async(_cacheQueue, ^{
       if (![self.fileManager fileExistsAtPath:self.folderCachePath]) {
         [self.fileManager createDirectoryAtPath:self.folderCachePath withIntermediateDirectories:YES attributes:nil error:nil];
+      }
+      
+      // disk 中已经存在
+      if ([self.fileManager fileExistsAtPath:[self fullImageCachePathWithKey:key]]) {
+        return;
       }
       
       NSData *imageData = UIImagePNGRepresentation(image);
@@ -129,17 +152,21 @@
       
       if (imageData) {
         NSString *cachePath = [self fullImageCachePathWithKey:key];
-        success = [self.fileManager createFileAtPath:cachePath contents:imageData attributes:nil];
+        [self.fileManager createFileAtPath:cachePath contents:imageData attributes:nil];
       }
       
       dispatch_async(dispatch_get_main_queue(), ^{
-        completion(success);
+        completion();
       });
+        
     });
   }
 }
 
 - (void)cacheImageOnlyInMemoryWithKey:(NSString *)key image:(UIImage *)image {
+  if ([self.memoryCache objectForKey:key] != nil) {
+    return;
+  }
   [self.memoryCache setObject:image forKey:key];
 }
 
@@ -175,13 +202,14 @@
   
 }
 
-#pragma mark - Helper methods
+#pragma mark  Helper methods
 - (UIImage *)diskCachedImageWithKey:(NSString *)key {
   NSString *fullCachePath = [self fullImageCachePathWithKey:key];
   BOOL exists = [self.fileManager fileExistsAtPath:fullCachePath];
   if (exists) {
     NSData *imageData = [NSData dataWithContentsOfFile:fullCachePath];
     UIImage *image = [UIImage imageWithData:imageData];
+    [self.memoryCache setObject:image forKey:key];
     return image;
   }
   return nil;
@@ -194,11 +222,10 @@
   return imagePath;
 }
 
-#pragma mark - getter
+#pragma mark  getter
 - (AutoPurgeCache *)memoryCache {
   if (!_memoryCache) {
     _memoryCache = [[AutoPurgeCache alloc] init];
-    _memoryCache.countLimit = self.maxMemoryCacheNumber;
   }
   return _memoryCache;
 }
@@ -215,4 +242,11 @@
   }
   return _fileManager;
 }
+
+#pragma mark  setter
+- (void)setMaxMemoryCacheNumber:(NSUInteger)maxMemoryCacheNumber {
+    _maxMemoryCacheNumber = maxMemoryCacheNumber;
+    self.memoryCache.countLimit = maxMemoryCacheNumber;
+}
+
 @end
