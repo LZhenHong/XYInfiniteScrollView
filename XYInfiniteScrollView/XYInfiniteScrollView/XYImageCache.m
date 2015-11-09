@@ -99,17 +99,18 @@
   
   UIImage *image = [self.memoryCache objectForKey:key];
   if (image) { // 内存缓存有
-    dispatch_async(dispatch_get_main_queue(), ^{
+    // 对图片闪烁的暂时解决方法
+//    dispatch_async(dispatch_get_main_queue(), ^{
       completion(image, XYImageSourceTypeMemory);
-    });
+//    });
     return;
    }
   
   image = [self diskCachedImageWithKey:key];
   if (image) { // disk 查找
-    dispatch_async(dispatch_get_main_queue(), ^{
+//    dispatch_async(dispatch_get_main_queue(), ^{
       completion(image, XYImageSourceTypeDisk);
-    });
+//    });
     return;
   }
   

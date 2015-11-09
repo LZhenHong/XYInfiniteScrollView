@@ -61,7 +61,6 @@
   isv.bounds = CGRectMake(0, 0, width, width * 0.5625);
   
   isv.items = self.items;
-  // 拖拽时图片会闪烁
   isv.scrollDirection = XYInfiniteScrollViewDirectionLandscape;
   
   isv.timerEnabled = YES;
