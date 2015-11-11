@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, XYImageSourceType) {
 };
 
 typedef void(^XYQueryImageCompletion)(UIImage *image, XYImageSourceType source);
-typedef void(^XYCacheImageCompletion)();
+typedef void(^XYCacheImageCompletion)(BOOL isSucceeded);
 
 @interface XYImageCache : NSObject
 

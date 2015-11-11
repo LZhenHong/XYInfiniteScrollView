@@ -93,7 +93,7 @@
 
 - (void)queryImageFromCacheWithKey:(NSString *)key completion:(XYQueryImageCompletion)completion {
   if (!key) {
-    completion(nil, XYImageSourceTypeNone);
+    !completion ? : completion(nil, XYImageSourceTypeNone);
     return;
   }
   
@@ -101,7 +101,7 @@
   if (image) { // 内存缓存有
     // 对图片闪烁的暂时解决方法
 //    dispatch_async(dispatch_get_main_queue(), ^{
-      completion(image, XYImageSourceTypeMemory);
+      !completion ? : completion(image, XYImageSourceTypeMemory);
 //    });
     return;
    }
@@ -109,7 +109,7 @@
   image = [self diskCachedImageWithKey:key];
   if (image) { // disk 查找
 //    dispatch_async(dispatch_get_main_queue(), ^{
-      completion(image, XYImageSourceTypeDisk);
+      !completion ? : completion(image, XYImageSourceTypeDisk);
 //    });
     return;
   }
@@ -117,10 +117,10 @@
   // download from Internet
   [[XYImageDownloader sharedImageDownloader] downloadImageWithURLString:key completion:^(UIImage *image, NSError *error) {
     if (error || image == nil) {
-      completion(nil, XYImageSourceTypeNone);
+      !completion ? : completion(nil, XYImageSourceTypeNone);
     } else {
       dispatch_async(dispatch_get_main_queue(), ^{
-        completion(image, XYImageSourceTypeWeb);
+        !completion ? : completion(image, XYImageSourceTypeWeb);
       });
       [self cacheImageWithKey:key image:image completion:nil];
     }
@@ -131,6 +131,8 @@
   if (!key) {
     return;
   }
+  
+  __block BOOL success = YES;
   
   [self cacheImageOnlyInMemoryWithKey:key image:image];
   
@@ -153,11 +155,11 @@
       
       if (imageData) {
         NSString *cachePath = [self fullImageCachePathWithKey:key];
-        [self.fileManager createFileAtPath:cachePath contents:imageData attributes:nil];
+        success = [self.fileManager createFileAtPath:cachePath contents:imageData attributes:nil];
       }
       
       dispatch_async(dispatch_get_main_queue(), ^{
-        completion();
+        !completion ? : completion(success);
       });
         
     });

@@ -33,12 +33,12 @@
   NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithURL:[NSURL URLWithString:urlString] completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       dispatch_async(dispatch_get_main_queue(), ^{
-        completion(nil, error);
+        !completion ? : completion(nil, error);
       });
     } else {
       UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:location]];
       dispatch_async(dispatch_get_main_queue(), ^{
-        completion(image, nil);
+        !completion ? : completion(image, nil);
       });
     }
   }];
