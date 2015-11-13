@@ -90,8 +90,9 @@ static CGFloat margin = 10.0;
     UIImage *image = [UIImage imageNamed:item.imageName];
     [self setImage:image forState:UIControlStateNormal];
   } else if (item.imageURL) {
+    __weak typeof(self) weakSelf = self;
     [self.imageCache queryImageFromCacheWithKey:item.imageURL completion:^(UIImage *image, XYImageSourceType source) {
-      [self setImage:image forState:UIControlStateNormal];
+      [weakSelf setImage:image forState:UIControlStateNormal];
     }];
   }
   
