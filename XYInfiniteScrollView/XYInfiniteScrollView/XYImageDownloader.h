@@ -13,5 +13,5 @@ typedef void(^XYImageDownloaderCompletion)(UIImage *image, NSError *error);
 @interface XYImageDownloader : NSObject
 + (instancetype)sharedImageDownloader;
 
-- (void)downloadImageWithURLString:(NSString *)urlString completion:(XYImageDownloaderCompletion)completion;
+- (NSURLSessionDownloadTask *)downloadImageWithURLString:(NSString *)urlString completion:(XYImageDownloaderCompletion)completion;
 @end

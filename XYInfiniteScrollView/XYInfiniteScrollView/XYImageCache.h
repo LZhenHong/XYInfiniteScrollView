@@ -31,7 +31,7 @@ typedef void(^XYCacheImageCompletion)(BOOL isSucceeded);
 @property (nonatomic, assign) NSUInteger maxMemoryCacheNumber;
 
 
-- (void)queryImageFromCacheWithKey:(NSString *)key completion:(XYQueryImageCompletion)completion;
+- (NSURLSessionDownloadTask *)queryImageFromCacheWithKey:(NSString *)key completion:(XYQueryImageCompletion)completion;
 - (void)cacheImageWithKey:(NSString *)key image:(UIImage *)image completion:(XYCacheImageCompletion)completion;
 - (void)cacheImageOnlyInMemoryWithKey:(NSString *)key image:(UIImage *)image;
 - (void)removeImageForKey:(NSString *)key;

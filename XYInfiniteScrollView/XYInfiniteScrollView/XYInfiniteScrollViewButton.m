@@ -12,6 +12,7 @@
 
 @interface XYInfiniteScrollViewButton ()
 @property (nonatomic, strong) XYImageCache *imageCache;
+@property (nonatomic, strong) id task;
 @end
 
 @implementation XYInfiniteScrollViewButton {
@@ -91,8 +92,11 @@ static CGFloat margin = 10.0;
     [self setImage:image forState:UIControlStateNormal];
   } else if (item.imageURL) {
     __weak typeof(self) weakSelf = self;
-    [self.imageCache queryImageFromCacheWithKey:item.imageURL completion:^(UIImage *image, XYImageSourceType source) {
-      [weakSelf setImage:image forState:UIControlStateNormal];
+    self.task == nil ?  : [self.task cancel];
+    self.task = [self.imageCache queryImageFromCacheWithKey:item.imageURL completion:^(UIImage *image, XYImageSourceType source) {
+      if (image != nil) {
+        [weakSelf setImage:image forState:UIControlStateNormal];
+      }
     }];
   }
   

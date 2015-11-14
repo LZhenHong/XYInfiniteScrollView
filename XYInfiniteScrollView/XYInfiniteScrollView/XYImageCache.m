@@ -91,10 +91,10 @@
   return self;
 }
 
-- (void)queryImageFromCacheWithKey:(NSString *)key completion:(XYQueryImageCompletion)completion {
+- (NSURLSessionDownloadTask *)queryImageFromCacheWithKey:(NSString *)key completion:(XYQueryImageCompletion)completion {
   if (!key) {
     !completion ? : completion(nil, XYImageSourceTypeNone);
-    return;
+    return nil;
   }
   
   UIImage *image = [self.memoryCache objectForKey:key];
@@ -103,7 +103,7 @@
 //    dispatch_async(dispatch_get_main_queue(), ^{
       !completion ? : completion(image, XYImageSourceTypeMemory);
 //    });
-    return;
+    return nil;
    }
   
   image = [self diskCachedImageWithKey:key];
@@ -111,11 +111,11 @@
 //    dispatch_async(dispatch_get_main_queue(), ^{
       !completion ? : completion(image, XYImageSourceTypeDisk);
 //    });
-    return;
+    return nil;
   }
   
   // download from Internet
-  [[XYImageDownloader sharedImageDownloader] downloadImageWithURLString:key completion:^(UIImage *image, NSError *error) {
+  NSURLSessionDownloadTask *task = [[XYImageDownloader sharedImageDownloader] downloadImageWithURLString:key completion:^(UIImage *image, NSError *error) {
     if (error || image == nil) {
       !completion ? : completion(nil, XYImageSourceTypeNone);
     } else {
@@ -125,6 +125,7 @@
       [self cacheImageWithKey:key image:image completion:nil];
     }
   }];
+  return task;
 }
 
 - (void)cacheImageWithKey:(NSString *)key image:(UIImage *)image completion:(XYCacheImageCompletion)completion {

@@ -26,7 +26,7 @@
   return imageDownloader;
 }
 
-- (void)downloadImageWithURLString:(NSString *)urlString completion:(XYImageDownloaderCompletion)completion {
+- (NSURLSessionDownloadTask *)downloadImageWithURLString:(NSString *)urlString completion:(XYImageDownloaderCompletion)completion {
   
 //  NSAssert(urlString != nil, @"Invalid URL String!");
   
@@ -44,6 +44,8 @@
   }];
   
   [downloadTask resume];
+  
+  return downloadTask;
 }
 
 - (NSURLSession *)session {

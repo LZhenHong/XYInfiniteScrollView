@@ -11,7 +11,6 @@
 
 @interface XYDownloadImageViewController ()
 @property (nonatomic, strong) NSArray *items;
-@property (nonatomic, strong) NSArray *imageURLs;
 @property (nonatomic, weak) XYInfiniteScrollView *isv;
 @end
 
@@ -27,18 +26,27 @@
            ];
 }
 
+- (NSArray *)names {
+  return @[
+            @"移动迷宫",
+            @"山河故人",
+            @"史努比",
+            @"绝命海拔",
+            @"蚁人 -> Antman"
+            ];
+}
+
 - (NSArray *)items {
   if (!_items) {
     NSMutableArray *tempItems = [NSMutableArray array];
-    for (int i = 0; i < self.imageURLs.count; ++i) {
+    for (int i = 0; i < [[self imageURLs] count]; ++i) {
       
       XYInfiniteScrollItem *item = [[XYInfiniteScrollItem alloc] init];
-      item.imageURL = self.imageURLs[i];
+      item.imageURL = [[self imageURLs] objectAtIndex:i];
       item.operation = ^(XYInfiniteScrollItem *blockItem) {
         NSLog(@"%@", blockItem.title);
       };
-      item.title = [NSString stringWithFormat:@"%@", self.imageURLs[i]];
-      item.titleFont = [UIFont fontWithName:@"Monoisome-Regular" size:12];
+      item.title = [[self names] objectAtIndex:i];
       
       item.position = XYInfiniteScrollItemTextPositionBottom;
       
@@ -57,8 +65,9 @@
   
   XYInfiniteScrollView *isv = [[XYInfiniteScrollView alloc] init];
   isv.center = self.view.center;
-  CGFloat width = self.view.frame.size.width - 2 * 20;
-  isv.bounds = CGRectMake(0, 0, width, width * 0.5625);
+  CGFloat width = 186;
+  CGFloat height = 279;
+  isv.bounds = CGRectMake(0, 0, width, height);
   
   isv.items = self.items;
   isv.scrollDirection = XYInfiniteScrollViewDirectionLandscape;
